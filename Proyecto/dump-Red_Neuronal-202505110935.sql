@@ -59,8 +59,8 @@ INSERT INTO `Personajes_entrenamiento` VALUES
 (5,'Piccolo',0,1,0,0,0,1,1,0,1,1,0,1,1,0,0),
 (6,'Krillin',0,0,0,1,0,1,1,0,0,1,0,1,0,0,0),
 (7,'Freezer',0,0,0,0,0,1,1,0,0,0,1,1,1,0,1),
-(8,'Android 18',0,0,1,0,0,1,1,0,0,1,1,0,1,1,0),
-(9,'Cell',0,0,1,0,0,1,1,0,0,0,1,1,1,0,0),
+(8,'Kale',1,0,0,0,0,1,1,0,1,1,1,0,1,1,0),
+(9,'Cell',0,0,1,0,0,1,1,0,1,0,1,1,1,0,0),
 (10,'Gohan',1,0,0,0,0,1,1,0,0,1,0,1,1,0,0),
 (11,'Majin Buu',0,0,0,0,0,1,1,0,0,1,1,1,1,0,0);
 /*!40000 ALTER TABLE `Personajes_entrenamiento` ENABLE KEYS */;
@@ -79,4 +79,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-08 22:28:13
+-- Dump completed on 2025-05-11  9:35:07

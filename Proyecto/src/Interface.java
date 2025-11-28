@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import org.encog.ml.data.basic.BasicMLData;
+import java.io.File;                     // Importación añadida
+import java.io.FileNotFoundException;   
 
 public class Interface extends JFrame {
     private Map<String, JComboBox<String>> respuestas;
@@ -73,41 +75,84 @@ public class Interface extends JFrame {
 
             // Obtener predicción
             String prediccion = redNeuronal.predecir(entrada);
+            String nombrePersonaje = prediccion.split("¡")[1].split("!")[0].trim(); // Extraer solo el nombre
             
-            // Mostrar resultado en un JOptionPane con icono personalizado
-            ImageIcon icono = new ImageIcon("dragonball.png"); // Asegúrate de tener esta imagen
-            JOptionPane.showMessageDialog(
-                this, 
-                prediccion,
-                "¡Adivinación completada!", 
-                JOptionPane.INFORMATION_MESSAGE,
-                icono);
-            // En el método analizar, después de obtener la predicción:
+            ImageIcon iconoDialogo = null;
+            File iconoFile = new File("bin/resources/dragon.png");
+            if (iconoFile.exists()) {
+                iconoDialogo = new ImageIcon(iconoFile.getAbsolutePath());
+            } else {
+                // Intenta cargar como recurso embebido
+                java.net.URL iconoUrl = getClass().getResource("/resources/dragon.png");
+                if (iconoUrl != null) {
+                    iconoDialogo = new ImageIcon(iconoUrl);
+                } else {
+                    throw new FileNotFoundException("No se encontró el icono dragon.png");
+                }
+            }
+
+            // 2. Cargar imagen del personaje
+            String nombreArchivo = nombrePersonaje + ".jpg";
+            ImageIcon imagenPersonaje = null;
+            
+            // Intento 1: Desde filesystem
+            File imagenFile = new File("bin/resources/predicciones/" + nombreArchivo);
+            if (imagenFile.exists()) {
+                imagenPersonaje = new ImageIcon(imagenFile.getAbsolutePath());
+            } else {
+                // Intento 2: Como recurso embebido
+                java.net.URL imagenUrl = getClass().getResource("/resources/predicciones/" + nombreArchivo);
+                if (imagenUrl != null) {
+                    imagenPersonaje = new ImageIcon(imagenUrl);
+                } else {
+                    throw new FileNotFoundException("No se encontró la imagen del personaje: " + nombreArchivo);
+                }
+            }
+
+            // 3. Redimensionar imagen del personaje
+            Image imagenRedimensionada = imagenPersonaje.getImage()
+                    .getScaledInstance(200, 400, Image.SCALE_SMOOTH);
+            ImageIcon iconoPersonaje = new ImageIcon(imagenRedimensionada);
+
+            // 4. Crear panel de diálogo
+            JPanel panel = new JPanel(new BorderLayout(10, 10));
+            panel.setPreferredSize(new Dimension(450, 400));
+            panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+            // Texto con HTML para mejor formato
+            JLabel texto = new JLabel("<html><div style='text-align: center;'>" +
+                    "<h2 style='color: #FF6600;'>" + prediccion + "</h2>" +
+                    "<p style='font-size: 14px;'>¿He acertado?</p>" +
+                    "</div></html>");
+            texto.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // Imagen del personaje
+            JLabel imagenLabel = new JLabel(iconoPersonaje);
+            imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // Organizar componentes
+            panel.add(texto, BorderLayout.NORTH);
+            panel.add(imagenLabel, BorderLayout.CENTER);
+
+            // 5. Mostrar diálogo
             String[] opciones = {"¡Correcto!", "Intentar de nuevo"};
             int eleccion = JOptionPane.showOptionDialog(
-                this,
-                "<html><div style='text-align: center;'><h2>" + prediccion + "</h2>" +
-                "<p>¿He acertado?</p></div></html>",
-                "Resultado",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                icono,
-                opciones,
-                opciones[0]);
+                    this,
+                    panel,
+                    "¡Resultado!",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    iconoDialogo,
+                    opciones,
+                    opciones[0]);
 
-            if (eleccion == JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(this, "¡Genial! Soy un experto en Dragon Ball");
-            } else {
-                JOptionPane.showMessageDialog(this, "¡Vaya! Seguiré entrenando mi red neuronal");
-            }
-                
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(
-                this, 
-                "Ocurrió un error al analizar: " + ex.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error al mostrar resultados:\n" + ex.getMessage() +
+                    "\nVerifica que los archivos estén en bin/resources/",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-
 }
